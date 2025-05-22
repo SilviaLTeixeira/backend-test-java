@@ -42,6 +42,9 @@ public class EmpresaController {
 
     @Schema(description = "Endereço da empresa", example = "Rua do teste, 123")
     public String endereco;
+
+    @Schema(description = "Telefone da empresa", example = "(11) 91234-5678")
+    public String telefone;
   }
 
   @Operation(summary = "Listar todas as empresas")
@@ -54,7 +57,7 @@ public class EmpresaController {
       """))))
   @GetMapping(produces = "application/json")
   public List<Map<String, Object>> listarEmpresas() {
-    String sql = "SELECT nome, cnpj, endereco FROM empresas";
+    String sql = "SELECT nome, cnpj, endereco, telefone FROM empresas";
     List<Map<String, Object>> empresas = jdbcTemplate.queryForList(sql);
 
     for (Map<String, Object> empresa : empresas) {
@@ -77,7 +80,7 @@ public class EmpresaController {
   })
   @GetMapping(value = "/{cnpj}", produces = "application/json")
   public Object buscarPorCnpj(@PathVariable String cnpj) {
-    String sql = "SELECT nome, cnpj, endereco FROM empresas WHERE cnpj = ?";
+    String sql = "SELECT nome, cnpj, endereco, telefone FROM empresas WHERE cnpj = ?";
     List<Map<String, Object>> resultado = jdbcTemplate.queryForList(sql, cnpj);
 
     if (resultado.isEmpty()) {
@@ -131,8 +134,13 @@ public class EmpresaController {
       return response;
     }
 
-    String sql = "INSERT INTO empresas (nome, cnpj, endereco) VALUES (?, ?, ?)";
-    int rows = jdbcTemplate.update(sql, empresa.nome, cnpjLimpo, empresa.endereco);
+    if (empresa.telefone != null && empresa.telefone.length() > 20) {
+      response.put("erro", "O telefone pode ter no máximo 20 caracteres.");
+      return response;
+    }
+
+    String sql = "INSERT INTO empresas (nome, cnpj, endereco, telefone) VALUES (?, ?, ?, ?)";
+    int rows = jdbcTemplate.update(sql, empresa.nome, cnpjLimpo, empresa.endereco, empresa.telefone);
     response.put("mensagem", "Empresa cadastrada com sucesso.");
     response.put("linhasAfetadas", rows);
 
@@ -166,8 +174,13 @@ public class EmpresaController {
       return response;
     }
 
-    String sql = "UPDATE empresas SET nome = ?, endereco = ? WHERE cnpj = ?";
-    int rows = jdbcTemplate.update(sql, empresa.nome, empresa.endereco, cnpj);
+    if (empresa.telefone != null && empresa.telefone.length() > 20) {
+      response.put("erro", "O telefone pode ter no máximo 20 caracteres.");
+      return response;
+    }
+
+    String sql = "UPDATE empresas SET nome = ?, endereco = ?, telefone = ? WHERE cnpj = ?";
+    int rows = jdbcTemplate.update(sql, empresa.nome, empresa.endereco, empresa.telefone, cnpj);
 
     if (rows == 0) {
       response.put("erro", "Nenhuma empresa encontrada com o CNPJ fornecido.");
