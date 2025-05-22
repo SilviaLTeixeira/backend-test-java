@@ -1,4 +1,4 @@
-name: backend_test_java
+version: "3.9"
 
 services:
   mysql_backend_test_java:
@@ -30,3 +30,5 @@ services:
 volumes:
   mysql_data:
   maven_cache:
+
+
