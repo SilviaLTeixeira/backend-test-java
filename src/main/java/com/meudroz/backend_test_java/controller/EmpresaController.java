@@ -57,12 +57,16 @@ public class EmpresaController {
 
   @Operation(summary = "Atualizar dados de uma empresa pelo CNPJ")
   @PutMapping("/{cnpj}")
-  public ResponseEntity<EmpresaResponseDTO> atualizar(
+  public ResponseEntity<Void> atualizar(
           @PathVariable String cnpj,
           @Valid @RequestBody EmpresaRequestDTO dto) {
-    return ResponseUtil.wrapOrNotFound(
-            service.atualizar(cnpj, dto)
-    );
+
+    boolean updated = service.atualizar(cnpj, dto).isPresent();
+    if (updated) {
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
 
   @Operation(summary = "Remover uma empresa pelo CNPJ")
