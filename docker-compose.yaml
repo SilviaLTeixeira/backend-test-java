@@ -5,31 +5,28 @@ services:
     image: mysql:8.1.0
     container_name: backend_test_java_mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: backend-test-java
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
-      SPRING_MESSAGES_ENCODING: UTF-8
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=backend-test-java
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
     ports:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
   app_backend_test_java:
-    image: maven:3.9.9-amazoncorretto-21-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: backend_test_java
+    environment:
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
     ports:
       - "8080:8080"
-    volumes:
-      - .:/app
-      - maven_cache:/root/.m2
-    working_dir: /app
-    command: ["mvn", "spring-boot:run"]
     depends_on:
       - mysql_backend_test_java
 
 volumes:
   mysql_data:
   maven_cache:
-
-
