@@ -12,17 +12,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EmpresaRequestDTO {
 
-    @NotBlank(message = "O nome é obrigatório.")
-    @Size(max = 100, message = "O nome pode ter no máximo 100 caracteres.")
+    @NotBlank(message = "{empresa.nome.required}")
+    @Size(max = 100, message = "{empresa.nome.size}")
     private String nome;
 
-    @NotBlank(message = "O CNPJ é obrigatório.")
-    @Pattern(regexp = "\\d{14}", message = "O CNPJ deve ter exatamente 14 dígitos numéricos.")
+    @NotBlank(message = "{empresa.cnpj.required}")
+    @Pattern(regexp = "\\d{14}", message = "{empresa.cnpj.pattern}")
     private String cnpj;
 
-    @Size(max = 200, message = "O endereço pode ter no máximo 200 caracteres.")
+    @Size(max = 200, message = "{empresa.endereco.size}")
     private String endereco;
 
-    @Size(max = 20, message = "O telefone pode ter no máximo 20 caracteres.")
+    @Size(max = 20, message = "{empresa.telefone.size}")
     private String telefone;
 }

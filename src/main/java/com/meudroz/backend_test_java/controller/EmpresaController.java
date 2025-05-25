@@ -1,15 +1,18 @@
 package com.meudroz.backend_test_java.controller;
 
-
 import com.meudroz.backend_test_java.dto.EmpresaRequestDTO;
 import com.meudroz.backend_test_java.dto.EmpresaResponseDTO;
 import com.meudroz.backend_test_java.service.EmpresaService;
+import com.meudroz.backend_test_java.utils.CnpjUtils;
+import com.meudroz.backend_test_java.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -34,26 +37,43 @@ public class EmpresaController {
   @Operation(summary = "Buscar uma empresa pelo CNPJ")
   @GetMapping("/{cnpj}")
   public ResponseEntity<EmpresaResponseDTO> buscarPorCnpj(@PathVariable String cnpj) {
-    return service.buscarPorCnpj(cnpj)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+    return ResponseUtil.wrapOrNotFound(
+            service.buscarPorCnpj(cnpj)
+    );
   }
 
   @Operation(summary = "Cadastrar uma nova empresa")
   @PostMapping
   public ResponseEntity<EmpresaResponseDTO> cadastrar(
-          @Valid @RequestBody EmpresaRequestDTO dto) {
+          @Valid @RequestBody EmpresaRequestDTO dto,
+          UriComponentsBuilder uriBuilder) {
     EmpresaResponseDTO criado = service.criar(dto);
-    return ResponseEntity.ok(criado);
+    URI location = uriBuilder
+            .path("/empresas/{cnpj}")
+            .buildAndExpand(CnpjUtils.clean(criado.getCnpj()))
+            .toUri();
+    return ResponseEntity.created(location).body(criado);
   }
 
   @Operation(summary = "Atualizar dados de uma empresa pelo CNPJ")
   @PutMapping("/{cnpj}")
-  public ResponseEntity<EmpresaResponseDTO> atualizar(
+  public ResponseEntity<Void> atualizar(
           @PathVariable String cnpj,
           @Valid @RequestBody EmpresaRequestDTO dto) {
-    return service.atualizar(cnpj, dto)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+
+    boolean updated = service.atualizar(cnpj, dto).isPresent();
+    if (updated) {
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.notFound().build();
+    }
+  }
+
+  @Operation(summary = "Remover uma empresa pelo CNPJ")
+  @DeleteMapping("/{cnpj}")
+  public ResponseEntity<Void> deletar(@PathVariable String cnpj) {
+    boolean removed = service.deletar(cnpj);
+    return removed ? ResponseEntity.noContent().build()
+            : ResponseEntity.notFound().build();
   }
 }

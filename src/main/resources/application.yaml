@@ -11,6 +11,10 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
 
+  messages:
+    basename: messages
+    encoding: UTF-8
+
   jpa:
     hibernate:
       ddl-auto: update

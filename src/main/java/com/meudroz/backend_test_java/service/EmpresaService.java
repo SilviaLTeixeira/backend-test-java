@@ -4,12 +4,12 @@ import com.meudroz.backend_test_java.dto.EmpresaRequestDTO;
 import com.meudroz.backend_test_java.dto.EmpresaResponseDTO;
 import com.meudroz.backend_test_java.model.Empresa;
 import com.meudroz.backend_test_java.repository.EmpresaRepository;
+import com.meudroz.backend_test_java.utils.CnpjUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 
 @Service
 public class EmpresaService {
@@ -28,7 +28,8 @@ public class EmpresaService {
     }
 
     public Optional<EmpresaResponseDTO> buscarPorCnpj(String cnpj) {
-        return repository.findByCnpj(cnpj)
+        String cleanCnpj = CnpjUtils.clean(cnpj);
+        return repository.findByCnpj(cleanCnpj)
                 .map(this::toResponseDTO);
     }
 
@@ -39,7 +40,8 @@ public class EmpresaService {
     }
 
     public Optional<EmpresaResponseDTO> atualizar(String cnpj, EmpresaRequestDTO dto) {
-        return repository.findByCnpj(cnpj)
+        String cleanCnpj = CnpjUtils.clean(cnpj);
+        return repository.findByCnpj(cleanCnpj)
                 .map(existing -> {
                     existing.setNome(dto.getNome());
                     existing.setEndereco(dto.getEndereco());
@@ -49,10 +51,20 @@ public class EmpresaService {
                 });
     }
 
+    public boolean deletar(String cnpj) {
+        String cleanCnpj = CnpjUtils.clean(cnpj);
+        Optional<Empresa> empresa = repository.findByCnpj(cleanCnpj);
+        if (empresa.isPresent()) {
+            repository.delete(empresa.get());
+            return true;
+        }
+        return false;
+    }
+
     private EmpresaResponseDTO toResponseDTO(Empresa empresa) {
         return new EmpresaResponseDTO(
                 empresa.getNome(),
-                formatarCnpj(empresa.getCnpj()),
+                CnpjUtils.format(empresa.getCnpj()),
                 empresa.getEndereco(),
                 empresa.getTelefone()
         );
@@ -61,13 +73,9 @@ public class EmpresaService {
     private Empresa toEntity(EmpresaRequestDTO dto) {
         Empresa e = new Empresa();
         e.setNome(dto.getNome());
-        e.setCnpj(dto.getCnpj().replaceAll("[^0-9]", ""));
+        e.setCnpj(CnpjUtils.clean(dto.getCnpj()));
         e.setEndereco(dto.getEndereco());
         e.setTelefone(dto.getTelefone());
         return e;
-    }
-
-    private String formatarCnpj(String cnpj) {
-        return cnpj.replaceAll("(\\d{2})(\\d{3})(\\d{3})(\\d{4})(\\d{2})", "$1.$2.$3/$4-$5");
     }
 }
