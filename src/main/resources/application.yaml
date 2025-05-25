@@ -18,4 +18,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+logging:
+  level:
+    root: INFO
+    com.meudroz.backend_test_java: DEBUG
+
 
