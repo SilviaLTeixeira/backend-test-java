@@ -1,6 +1,9 @@
 package com.meudroz.backend_test_java.utils;
 
-public class CnpjUtils {
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public final class CnpjUtils {
 
     public static String clean(String cnpj) {
         return cnpj == null ? null : cnpj.replaceAll("\\D", "");

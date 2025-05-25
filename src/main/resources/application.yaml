@@ -1,18 +1,14 @@
 spring:
-  application:
-    name: backend-test-java
-
   datasource:
     url: jdbc:mysql://mysql_backend_test_java:3306/backend-test-java
-    username: admin
-    password: admin
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
 
   messages:
-    basename: messages
     encoding: UTF-8
 
   jpa:
@@ -26,4 +22,5 @@ logging:
   level:
     root: INFO
     com.meudroz.backend_test_java: DEBUG
+
 
