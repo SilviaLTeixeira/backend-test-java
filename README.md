@@ -1,57 +1,117 @@
-# Desafio Técnico - Backend Java
+# Backend Test Java
 
-Seja bem-vindo(a) ao nosso desafio técnico Droz! Este teste tem como objetivo avaliar sua habilidade prática com desenvolvimento backend em Java utilizando Spring Boot, boas práticas de código, organização e capacidade de entrega.
-
----
-
-## Instruções
-
-1. Faça o **fork** deste repositório para a sua conta do GitHub.
-2. Desenvolva a solução **em seu fork**.
-3. Realize **commits frequentes e com mensagens claras** — queremos ver seu raciocínio de desenvolvimento.
-4. Ao finalizar, envie o link do seu repositório **forkado** para a pessoa responsável pelo processo seletivo.
-
-> ⚠️ **Importante**: Não envie pull requests para este repositório original.  
-> Toda a sua solução deve estar apenas no seu fork pessoal.
+Este projeto é uma aplicação **Spring Boot** para cadastro de empresas, desenvolvido como parte do Desafio Técnico da Droz. Ele segue arquitetura em camadas (Model, Repository, Service, Controller), utiliza **DTOs**, **validações** com Bean Validation, tratamento centralizado de exceções, logging e documentação interativa via **Swagger/OpenAPI**.
 
 ---
 
-## Descrição do desafio
+##  Pré-requisitos
 
-Você encontrará aqui uma aplicação Spring Boot que representa um cadastro de empresas. Seu desafio será: 1. Refatorar o código-fonte, eliminando code smells e aplicando boas práticas de desenvolvimento. 2. Adicionar o campo telefone na entidade Empresa, ajustando todas as camadas necessárias (DTO, controller, etc.). 3. Garantir que a aplicação continue funcionando corretamente após as alterações.
-
----
-
-## O que será avaliado
-
-Durante sua análise e implementação, esperamos que você aplique os seguintes requisitos obrigatórios:
-
-- Estruturação do código seguindo o padrão MVC (Model-View-Controller)
-- Uso de validações com @Valid
-- Uso de DTOs para entrada e saída de dados
-- Tratamento adequado de erros e exceções
-- Evitar repetições e aplicar o princípio DRY (Don’t Repeat Yourself)
-- Documentação da API com Swagger/OpenAPI
-- Garantia de que credenciais sensíveis não estejam expostas
-- Commits pequenos e descritivos, que expliquem claramente a evolução do código
-- Uso de boas práticas REST
+* Java 21 (JDK 21)
+* Maven 3.9+
+* Docker e Docker Compose (opcional para modo Docker)
+* MySQL 8 (pode ser local ou via container)
 
 ---
 
-## Diferenciais (não obrigatórios)
+##  Variáveis de ambiente
 
-Os itens abaixo não são obrigatórios, mas serão considerados diferenciais caso você queira demonstrar mais do seu conhecimento:
+Para não expor credenciais sensíveis, a aplicação utiliza variáveis de ambiente:
 
-- Escrita de testes unitários
-- Implementação de um ControllerAdvice para centralizar o tratamento de exceções
-- Uso correto de Docker para subir a aplicação
-- Uso adequado e estratégico de logs na aplicação
+| Variável      | Descrição                       | Exemplo |
+| ------------- | ------------------------------- | ------- |
+| `DB_USERNAME` | Usuário do banco de dados MySQL | `admin` |
+| `DB_PASSWORD` | Senha do banco de dados MySQL   | `admin` |
 
-## Dicas
+Defina-as no shell:
 
-- Utilize commits atômicos e com mensagens claras.
-- Documente qualquer decisão técnica que achar relevante no README ou via comentários no código.
-- Não se preocupe em reinventar a roda, mas foque na qualidade, organização e clareza do seu código.
-- Caso deseje utilizar alguma biblioteca externa para testes ou validações, fique à vontade (mas justifique se necessário).
+```bash
+export DB_USERNAME="admin"
+export DB_PASSWORD="admin"
+```
 
-Boa sorte e bons commits!
+Ou crie um arquivo `.env` na raiz do projeto(pode-se usar o arquivo .env.example como exemplo)
+
+---
+
+##  Executando localmente
+
+1. **Banco de dados**
+
+    * **Opção 1**: MySQL instalado localmente
+
+        * Crie o banco `backend-test-java`.
+    * **Opção 2**: Subir apenas o container MySQL(se ja tiver os containers criados):
+
+      ```bash
+      
+      docker-compose up -d mysql_backend_test_java
+
+      ```
+
+
+2. **Executar a aplicação**
+
+   ```bash
+   mvn clean install
+   mvn spring-boot:run -Dspring-boot.run.profiles=local
+        ou 
+   em run/debug configurations do BackendTestJavaApplication 
+   ir em Modify options > add VM options 
+   > digitar "-Dspring.profiles.active=local"
+   Rodar a aplicação no simbolo do run(triangulo)
+   ```
+
+---
+
+## Executando com Docker Compose
+
+Na raiz do projeto, certifique-se de ter o arquivo `.env` com as variáveis de ambiente definidas. Depois:
+
+```bash
+docker compose up --build -d
+```
+
+Para parar e remover containers:
+
+```bash
+docker compose down
+```
+
+---
+
+##  Endpoints e Swagger
+
+Após iniciar, acesse:
+
+* **Swagger UI**: `http://localhost:8080/swagger-ui.html`
+* **OpenAPI JSON**: `http://localhost:8080/v3/api-docs`
+
+Use a interface para explorar e testar a API.
+
+---
+
+
+## Testes
+
+O projeto inclui testes unitários para:
+
+* **Controllers**: validação de endpoints e tratamento de erros.
+* **Services**: regras de negócio.
+
+Execute-os com:
+
+```bash
+mvn test
+```
+
+---
+
+##  Logs
+
+* Perfil **default** (Docker): nível `INFO` para todos os pacotes.
+* Perfil **local**: nível `DEBUG` para `com.meudroz.backend_test_java`.
+
+---
+
+
+
