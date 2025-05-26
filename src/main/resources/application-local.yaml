@@ -1,0 +1,18 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:mysql://localhost:3307/backend-test-java
+    username: ${DB_USERNAME:admin}
+    password: ${DB_PASSWORD:admin}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+logging:
+  level:
+    root: INFO
+    com.meudroz.backend_test_java: DEBUG
